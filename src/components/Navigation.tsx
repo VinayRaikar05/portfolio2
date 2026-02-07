@@ -23,7 +23,7 @@ const navLinks = [
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { state } = useAnimation();
-  
+
   // Show background when scrolled past hero
   const isScrolled = state.scrollProgress > 0.08;
 
@@ -39,11 +39,10 @@ export default function Navigation() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-          isScrolled
-            ? 'bg-void/80 backdrop-blur-xl border-b border-white/5'
-            : 'bg-transparent'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${isScrolled
+          ? 'bg-void/80 backdrop-blur-xl border-b border-white/5'
+          : 'bg-transparent'
+          }`}
       >
         <div className="w-full px-6 sm:px-8 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -53,9 +52,11 @@ export default function Navigation() {
               onClick={(e) => handleLinkClick(e, '#home')}
               className="text-lg font-light tracking-tight text-white/80 hover:text-white transition-colors"
             >
-              <span className="text-white">AI</span>
-              <span className="text-white/40">/</span>
-              <span className="text-white/60">ML</span>
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="h-8 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
+              />
             </a>
 
             {/* Desktop Navigation */}
@@ -75,11 +76,12 @@ export default function Navigation() {
             {/* CTA */}
             <div className="hidden lg:block">
               <a
-                href="#contact"
-                onClick={(e) => handleLinkClick(e, '#contact')}
-                className="px-4 py-2 text-xs text-white/60 border border-white/10 rounded-full hover:border-white/20 hover:text-white/80 transition-all"
+                href="https://drive.google.com/file/d/1MOVS2hP7kQrUphLxmerklc5EOtgIDw4v/view?usp=drive_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 text-xs text-white/60 border border-white/10 rounded-full hover:border-white/20 hover:text-white/80 transition-all flex items-center gap-2"
               >
-                Let's Talk
+                Resume
               </a>
             </div>
 
@@ -97,9 +99,8 @@ export default function Navigation() {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${
-          isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
-        }`}
+        className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+          }`}
       >
         <div
           className="absolute inset-0 bg-void/95 backdrop-blur-xl"

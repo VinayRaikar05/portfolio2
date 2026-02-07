@@ -7,10 +7,10 @@ export default function Footer() {
       <div className="w-full px-6 sm:px-8 lg:px-12 xl:px-16">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/30 text-xs">
-            © {new Date().getFullYear()} AI/ML Engineer
+            © {new Date().getFullYear()} Vinay Raikar
           </p>
           <p className="text-white/20 text-xs">
-            Built with React & Three.js
+            All rights reserved
           </p>
         </div>
       </div>
