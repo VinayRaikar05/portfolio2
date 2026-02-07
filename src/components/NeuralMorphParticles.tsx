@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useMorphParticles } from '../hooks/useMorphParticles';
 import { useFluid } from '@funtech-inc/use-shader-fx';
-import { useMemo, useState, useCallback, useEffect, useRef } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 // Exact User Configuration
@@ -30,96 +30,167 @@ const USER_CONFIG = {
     divergencePoint: new THREE.Vector3(0, 0, 0),
 };
 
-interface MorphParticlesSceneProps {
-    currentShape: number;
-}
 
-function MorphParticlesScene({ currentShape }: MorphParticlesSceneProps) {
+function MorphParticlesScene() {
 
     // 1. Generate geometries for Morphing
     const { geometry, positions, uvs } = useMemo(() => {
-        const particleCount = 6000; // Increased for better density
+        const particleCount = 8000; // Increased count for better shape definition
 
         // Helper to generate a Float32Array
         const createBuffer = () => new Float32Array(particleCount * 3);
         const createUVBuffer = () => new Float32Array(particleCount * 2);
 
-        // --- Shape 1: Brain (Original) ---
-        const brainPos = createBuffer();
-        const brainUvs = createUVBuffer();
-        let pIndex = 0;
-        while (pIndex < particleCount) {
-            const x = (Math.random() - 0.5) * 4;
-            const y = (Math.random() - 0.5) * 3;
-            const z = (Math.random() - 0.5) * 4;
-            const xAbs = Math.abs(x);
-            const gap = 0.15;
-            if (xAbs < gap) continue;
-            const a = 1.6, b = 1.2, c = 1.5;
-            const dist = (Math.pow(xAbs - gap, 2) / (a * a)) + (Math.pow(y, 2) / (b * b)) + (Math.pow(z, 2) / (c * c));
-            if (dist <= 1.0) {
-                const noise = Math.sin(x * 10) * Math.cos(y * 10) * Math.sin(z * 10) * 0.1;
-                brainPos[pIndex * 3] = x + (x > 0 ? noise : -noise);
-                brainPos[pIndex * 3 + 1] = y + noise;
-                brainPos[pIndex * 3 + 2] = z + noise;
+        // --- Shape 0: Planet (Sphere + Rings) ---
+        const planetPos = createBuffer();
+        const planetUvs = createUVBuffer();
+        for (let i = 0; i < particleCount; i++) {
+            const isRing = i > particleCount * 0.8; // 20% particles for ring
+            if (isRing) {
+                // Ring
+                const radius = 3.5 + Math.random() * 1.5;
+                const theta = Math.random() * Math.PI * 2;
+                const drift = (Math.random() - 0.5) * 0.2;
+                planetPos[i * 3] = radius * Math.cos(theta);
+                planetPos[i * 3 + 1] = drift; // Flat ring
+                planetPos[i * 3 + 2] = radius * Math.sin(theta);
 
-                // Brain UVs
-                brainUvs[pIndex * 2] = (brainPos[pIndex * 3] / 4) + 0.5;
-                brainUvs[pIndex * 2 + 1] = (brainPos[pIndex * 3 + 1] / 3) + 0.5;
-                pIndex++;
+                // Tilt the ring
+                const y = planetPos[i * 3 + 1];
+                const z = planetPos[i * 3 + 2];
+                // Rotate around X
+                const angle = 0.4;
+                planetPos[i * 3 + 1] = y * Math.cos(angle) - z * Math.sin(angle);
+                planetPos[i * 3 + 2] = y * Math.sin(angle) + z * Math.cos(angle);
+
+            } else {
+                // Planet Body
+                const theta = 2 * Math.PI * Math.random();
+                const phi = Math.acos(2 * Math.random() - 1);
+                const r = 2.0;
+                planetPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                planetPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                planetPos[i * 3 + 2] = r * Math.cos(phi);
             }
+
+            planetUvs[i * 2] = i / particleCount;
+            planetUvs[i * 2 + 1] = 0;
         }
 
-        // --- Shape 2: Sphere (Planet) ---
-        const spherePos = createBuffer();
-        const sphereUvs = createUVBuffer();
+        // --- Shape 1: Rocket ---
+        const rocketPos = createBuffer();
+        const rocketUvs = createUVBuffer();
         for (let i = 0; i < particleCount; i++) {
-            const theta = 2 * Math.PI * Math.random();
-            const phi = Math.acos(2 * Math.random() - 1);
-            const r = 2.5; // Radius
-            const x = r * Math.sin(phi) * Math.cos(theta);
-            const y = r * Math.sin(phi) * Math.sin(theta);
-            const z = r * Math.cos(phi);
+            // Distribute particles: Body (60%), Nose (20%), Fins (20%)
+            const section = Math.random();
 
-            spherePos[i * 3] = x;
-            spherePos[i * 3 + 1] = y;
-            spherePos[i * 3 + 2] = z;
+            if (section < 0.6) {
+                // Cylinder Body
+                const h = (Math.random() - 0.5) * 4.0; // Height -2 to 2
+                const r = 0.8;
+                const theta = Math.random() * Math.PI * 2;
+                rocketPos[i * 3] = r * Math.cos(theta);
+                rocketPos[i * 3 + 1] = h; // Up/Down
+                rocketPos[i * 3 + 2] = r * Math.sin(theta);
+            }
+            else if (section < 0.8) {
+                // Nose Cone (Top)
+                const h = Math.random() * 1.5; // 0 to 1.5
+                const r = 0.8 * (1 - h / 1.5); // Taper
+                const theta = Math.random() * Math.PI * 2;
+                rocketPos[i * 3] = r * Math.cos(theta);
+                rocketPos[i * 3 + 1] = 2.0 + h; // Start at top of body
+                rocketPos[i * 3 + 2] = r * Math.sin(theta);
+            }
+            else {
+                // Fins (Bottom)
+                const finIndex = Math.floor(Math.random() * 3); // 3 fins
+                const angleOffset = (Math.PI * 2 / 3) * finIndex;
+                const w = Math.random() * 1.5; // Width out
+                const h = Math.random() * 1.5; // Height up
+                // Flat plane rotated
+                const localX = 0.8 + w;
+                const localY = -2.0 + h * 0.5; // Base
+                const thickness = (Math.random() - 0.5) * 0.1;
 
-            // Sphere UVs (Equirectangular)
-            sphereUvs[i * 2] = (theta / (2 * Math.PI)) + 0.5;
-            sphereUvs[i * 2 + 1] = (phi / Math.PI);
+                // Rotate fin to correct angle
+                const cosA = Math.cos(angleOffset);
+                const sinA = Math.sin(angleOffset);
+
+                rocketPos[i * 3] = localX * cosA - thickness * sinA;
+                rocketPos[i * 3 + 1] = localY;
+                rocketPos[i * 3 + 2] = localX * sinA + thickness * cosA;
+            }
+
+            // Tilt rocket to fly diagonally
+            const x = rocketPos[i * 3];
+            const y = rocketPos[i * 3 + 1];
+            // Rotate Z -45deg
+            const angle = -Math.PI / 4;
+            rocketPos[i * 3] = x * Math.cos(angle) - y * Math.sin(angle);
+            rocketPos[i * 3 + 1] = x * Math.sin(angle) + y * Math.cos(angle);
+
+            rocketUvs[i * 2] = i / particleCount;
+            rocketUvs[i * 2 + 1] = 0.33;
         }
 
-        // --- Shape 3: DNA Helix (Twist) ---
-        const helixPos = createBuffer();
-        const helixUvs = createUVBuffer();
+        // --- Shape 2: Spacestation ---
+        const stationPos = createBuffer();
+        const stationUvs = createUVBuffer();
         for (let i = 0; i < particleCount; i++) {
-            const t = (i / particleCount) * 20 - 10; // -10 to 10
-            const radius = 1.5;
+            const section = Math.random();
+            if (section < 0.7) {
+                // Main Torus Ring
+                const u = Math.random() * Math.PI * 2;
+                const v = Math.random() * Math.PI * 2;
+                const R = 3.0; // Main Radius
+                const r = 0.4; // Tube Radius
 
-            // Double Helix
-            const offset = i % 2 === 0 ? 0 : Math.PI;
-            const x = Math.cos(t + offset) * radius;
-            const z = Math.sin(t + offset) * radius;
-            const y = t * 0.4;
+                const x = (R + r * Math.cos(v)) * Math.cos(u);
+                const y = (R + r * Math.cos(v)) * Math.sin(u);
+                const z = r * Math.sin(v);
 
-            // Add volume/randomness
-            const rOffset = (Math.random() - 0.5) * 0.5;
+                stationPos[i * 3] = x;
+                stationPos[i * 3 + 1] = y;
+                stationPos[i * 3 + 2] = z;
+            } else {
+                // Central Hub + Spokes
+                const isSpoke = Math.random() > 0.5;
+                if (isSpoke) {
+                    // Spokes
+                    const k = Math.floor(Math.random() * 4); // 4 spokes
+                    const angle = (Math.PI / 2) * k;
+                    const dist = Math.random() * 3.0;
+                    stationPos[i * 3] = dist * Math.cos(angle);
+                    stationPos[i * 3 + 1] = dist * Math.sin(angle);
+                    stationPos[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
+                } else {
+                    // Center Sphere
+                    const r = 0.8;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    stationPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                    stationPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                    stationPos[i * 3 + 2] = r * Math.cos(phi);
+                }
+            }
+            // Tilt Station
+            const y = stationPos[i * 3 + 1];
+            const z = stationPos[i * 3 + 2];
+            // Rotate X 60deg
+            const angle = Math.PI / 3;
+            stationPos[i * 3 + 1] = y * Math.cos(angle) - z * Math.sin(angle);
+            stationPos[i * 3 + 2] = y * Math.sin(angle) + z * Math.cos(angle);
 
-            helixPos[i * 3] = x + rOffset;
-            helixPos[i * 3 + 1] = y;
-            helixPos[i * 3 + 2] = z + rOffset;
-
-            helixUvs[i * 2] = (i / particleCount);
-            helixUvs[i * 2 + 1] = 0.5 + (Math.sin(t) * 0.5);
+            stationUvs[i * 2] = i / particleCount;
+            stationUvs[i * 2 + 1] = 0.66;
         }
 
-        // --- Sequence: Brain -> Sphere -> Helix -> Brain ---
-        // This allows we to morph 0->1->2->3 and then snap back to 0
+        // --- Sequence: Planet (0) -> Rocket (1) -> Spacestation (2) -> Planet (0) ---
         return {
             geometry: new THREE.SphereGeometry(2, 64, 64),
-            positions: [brainPos, spherePos, helixPos, brainPos],
-            uvs: [brainUvs, sphereUvs, helixUvs, brainUvs],
+            positions: [planetPos, rocketPos, stationPos, planetPos],
+            uvs: [planetUvs, rocketUvs, stationUvs, planetUvs],
         };
     }, []);
 
@@ -145,7 +216,30 @@ function MorphParticlesScene({ currentShape }: MorphParticlesSceneProps) {
 
 
     // Ref to track current visual progress
+    const scrollTargetRef = useRef(0);
     const progressRef = useMemo(() => ({ value: 0 }), []);
+
+    // Scroll Handler
+    useEffect(() => {
+        const handleScroll = () => {
+            // Map scroll to 0..3 range
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollFraction = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+
+            // Map 0..1 to 0..2.99 (Don't go fully to 3 unless wrapping logic is handled primarily by array clamping)
+            // Actually, we have 4 positions: 0, 1, 2, 3(copy of 0).
+            // Let's map full scroll to cover the transition 0->1->2.
+            // If we want 0->1->2, we need range 0..2.
+            scrollTargetRef.current = scrollFraction * 2.5; // Go a bit past 2 to show station fully? 
+            // Or typically:
+            // Top: 0 (Planet)
+            // Middle: 1 (Rocket)
+            // Bottom: 2 (Spacestation)
+            scrollTargetRef.current = scrollFraction * 2.0;
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     useFrame((state) => {
         const time = state.clock.getElapsedTime();
@@ -154,49 +248,23 @@ function MorphParticlesScene({ currentShape }: MorphParticlesSceneProps) {
             forceBias: 3.0,
         });
 
-        // Debug Log (Throttled)
-        if (state.clock.elapsedTime % 1.0 < 0.05) {
-            // console.log("Progress:", progressRef.value, "CurrentShape:", currentShape);
-        }
-
-        // Smooth Lerp to target shape
-        const target = currentShape;
-        const speed = 2.0 * state.clock.getDelta(); // Morph speed
-
-        // If we are at 3 (Brain), and target is 0 (also Brain), we need to snap logic?
-        // No, my sequence is 0, 1, 2. 
-        // 0=Brain, 1=Sphere, 2=Helix. 
-        // But I added a 4th pos (Brain) at index 3.
-        // So valid states are 0, 1, 2.
-        // If I go 2 -> 0, I should animate 2 -> 3.
-        // Then once at 3, snap to 0.
-
-        // Complex logic:
-        // If currentShape represents the index in the 0..2 cycle.
-        // If we want to go from 2 to 0, we aim for 3.
-
-        let aim = target;
-        // Logic to wrap around: If we are effectively at 2 and want 0, we aim for 3.
-        if (progressRef.value > 2.5 && target === 0) {
-            aim = 3;
-        }
-
-        // Interpolate
-        const diff = aim - progressRef.value;
+        // Smooth Lerp to scroll target
+        const speed = 4.5 * state.clock.getDelta(); // Increased speed (~50% faster)
+        const diff = scrollTargetRef.current - progressRef.value;
         if (Math.abs(diff) > 0.001) {
             progressRef.value += diff * speed;
-        } else {
-            // Reached target
-            if (aim === 3) {
-                progressRef.value = 0; // Snap back to true 0
-            }
         }
 
-        // Normalize for shader (0..1 across the whole set? No, uMorphProgress 0..1 maps to index 0..N-1)
-        // Reference shader: "scaledProgress = uMorphProgress * (length-1)"
-        // So if I pass uMorphProgress = 0.5 in a 4-item array:
-        // Scaled = 0.5 * 3 = 1.5. Index 1 to 2. Correct.
-        // So I just pass `progressRef.value / 3` (since length is 4, max index is 3)
+        // Normalize for shader (0..1 across the whole set)
+        // We have 4 arrays in positions (0,1,2,3). Length = 4.
+        // The shader expects `uMorphProgress` where:
+        // index = floor(uMorphProgress * (length - 1))
+        // So valid input range is 0..1.
+        // We want to map our 0..2 progress to that 0..1 range of the shader *relative to defined keyframes*.
+        // If we pass 0 -> index 0.
+        // If we pass 1/3 -> index 1.
+        // If we pass 2/3 -> index 2.
+        // So we need to divide our 0..2 progress by 3.
         const shaderProgress = progressRef.value / 3;
 
         updateMorphParticles(state, {
@@ -571,26 +639,15 @@ function ConstellationGroup() {
     );
 }
 
+// --- CONSTELLATION SHADERS ---
+// (kept as is, truncated for brevity in this replace block if not changing, but since I need to clean up the wrapper too...)
+
 interface NeuralMorphParticlesProps {
     enabled?: boolean;
 }
 
 export default function NeuralMorphParticles({ enabled = true }: NeuralMorphParticlesProps) {
-    const [currentShape, setCurrentShape] = useState(0);
-
-    // Click Handler (Global cycled)
-    const nextShape = useCallback(() => {
-        setCurrentShape(prev => {
-            const next = (prev + 1) % 3;
-            // console.log("Morphing to shape index:", next);
-            return next;
-        });
-    }, []);
-
-    useEffect(() => {
-        window.addEventListener('click', nextShape);
-        return () => window.removeEventListener('click', nextShape);
-    }, [nextShape]);
+    // No more local state for shape index
 
     if (!enabled) return null;
 
@@ -603,12 +660,12 @@ export default function NeuralMorphParticles({ enabled = true }: NeuralMorphPart
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                zIndex: 0, // Changed from 3 to 0 to sit behind DOM if needed, but above background
+                zIndex: 0,
             }}
         >
 
             <Canvas
-                camera={{ position: [0, 0, 6], fov: 60 }} // ZOOMED IN (was 14)
+                camera={{ position: [0, 0, 6], fov: 60 }}
                 dpr={Math.min(window.devicePixelRatio, 2)}
                 gl={{ alpha: true, antialias: true }}
                 eventSource={document.body}
@@ -619,7 +676,7 @@ export default function NeuralMorphParticles({ enabled = true }: NeuralMorphPart
                 <ConstellationGroup />
 
                 {/* Foreground Morphing Particles */}
-                <MorphParticlesScene currentShape={currentShape} />
+                <MorphParticlesScene />
             </Canvas>
         </div>
     );
