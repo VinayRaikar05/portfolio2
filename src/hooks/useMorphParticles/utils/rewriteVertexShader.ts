@@ -19,19 +19,7 @@ export const rewriteVertexShader = (
         targetAttibute === "position"
             ? "#usf <morphPositionTransition>"
             : "#usf <morphUvTransition>";
-    const vListName =
-        targetAttibute === "position" ? "positionsList" : "uvsList";
-    const vMorphTransition =
-        targetAttibute === "position"
-            ? `
-				float scaledProgress = uMorphProgress * ${modifeidAttributes.length - 1}.;
-				int baseIndex = int(floor(scaledProgress));		
-				baseIndex = clamp(baseIndex, 0, ${modifeidAttributes.length - 1});		
-				float progress = fract(scaledProgress);
-				int nextIndex = baseIndex + 1;
-				newPosition = mix(positionsList[baseIndex], positionsList[nextIndex], progress);
-			`
-            : "newUv = mix(uvsList[baseIndex], uvsList[nextIndex], progress);";
+
 
     if (modifeidAttributes.length > 0) {
         // Delete the position at initialization and add the position after normalization
@@ -61,11 +49,39 @@ export const rewriteVertexShader = (
             `${vAttributeRewriteKey}`,
             stringToAddToMorphAttibutes
         );
+        // Generate robust mixing logic (If/Else) instead of dynamic array indexing
+        let morphLogic = `
+        {
+            float scaledProgress = uMorphProgress * ${modifeidAttributes.length - 1}.;
+            float progress = fract(scaledProgress);
+            ${targetAttibute === "position" ? "newPosition" : "newUv"} = ${targetAttibute === "position" ? `${vTargetName}0` : `${vTargetName}0`}; // Default
+        `;
+
+        for (let i = 0; i < modifeidAttributes.length - 1; i++) {
+            const condition = i === 0
+                ? `if (scaledProgress < ${i + 1}.0)`
+                : `else if (scaledProgress < ${i + 1}.0)`;
+
+            morphLogic += `
+            ${condition} {
+                ${targetAttibute === "position" ? "newPosition" : "newUv"} = mix(${vTargetName}${i}, ${vTargetName}${i + 1}, progress);
+            }`;
+        }
+        // Handle last edge case (exact max value)
+        morphLogic += `
+            else {
+                ${targetAttibute === "position" ? "newPosition" : "newUv"} = mix(${vTargetName}${modifeidAttributes.length - 2}, ${vTargetName}${modifeidAttributes.length - 1}, 1.0);
+            }
+        }
+        `;
+
+        vertexShader = vertexShader.replace(
+            `${vAttributeRewriteKey}`,
+            stringToAddToMorphAttibutes
+        );
         vertexShader = vertexShader.replace(
             `${vTransitionRewriteKey}`,
-            `vec${itemSize} ${vListName}[${modifeidAttributes.length}] = vec${itemSize}[](${stringToAddToMorphAttibutesList});
-				${vMorphTransition}
-			`
+            morphLogic
         );
     } else {
         vertexShader = vertexShader.replace(`${vAttributeRewriteKey}`, "");

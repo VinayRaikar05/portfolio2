@@ -171,13 +171,16 @@ void main() {
 
 	// displacement for \`newPosition\`
 	vec3 displacement = uIsDisplacement ? texture2D(uDisplacement, newUv).rgb : vec3(0.0);
-	float displacementIntensity = smoothstep(0., 1., displacement.g);
+    // Use length of the vector for intensity, so it works for Fluid velocity (which has direction)
+	float displacementIntensity = smoothstep(0., 1., length(displacement));
 	vDisplacementColor = displacement;
 	vDisplacementIntensity = displacementIntensity;
 
-	// At this point displacement is 0 ~ 1, so normalize it to -1 ~ 1
-	displacement = displacement * 2.-1.;
-	displacement *= displacementIntensity * uDisplacementIntensity;
+	// For Fluid (Float Texture), we do NOT need * 2. - 1. remapping. 
+    // Fluid velocity is already -1 to 1 (or defined by simulation).
+	// displacement = displacement * 2.-1.; 
+	
+    displacement *= displacementIntensity * uDisplacementIntensity;
 	newPosition += displacement;
 
 	// divergence

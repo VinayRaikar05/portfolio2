@@ -10,11 +10,12 @@ import { AnimationProvider } from './context/AnimationContext';
 import './App.css';
 
 // Persistent WebGL layer
-import CanvasLayer from './components/CanvasLayer';
+
 import ScrollController from './components/ScrollController';
 import GPUCursor from './components/GPUCursor';
-import SimpleMotionTrail from './components/SimpleMotionTrail';
+
 import NeuralMorphParticles from './components/NeuralMorphParticles';
+
 
 // DOM Content
 import Navigation from './components/Navigation';
@@ -37,11 +38,12 @@ function AppContent() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Persistent WebGL Canvas Layer */}
-      <CanvasLayer />
+
 
       {/* Neural Network Morphing Particles */}
       <NeuralMorphParticles enabled={true} />
+
+
 
       {/* Scroll Controller */}
       <ScrollController />
