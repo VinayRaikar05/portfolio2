@@ -208,7 +208,8 @@ export default function CanvasLayer() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
-    camera.position.set(0, 0, 14);
+    const isMobile = width < 768;
+    camera.position.set(0, 0, isMobile ? 24 : 14);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,

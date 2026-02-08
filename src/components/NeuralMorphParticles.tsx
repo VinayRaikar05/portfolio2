@@ -31,11 +31,11 @@ const USER_CONFIG = {
 };
 
 
-function MorphParticlesScene() {
+function MorphParticlesScene({ isMobile }: { isMobile: boolean }) {
 
     // 1. Generate geometries for Morphing
     const { geometry, positions, uvs } = useMemo(() => {
-        const particleCount = 8000; // Increased count for better shape definition
+        const particleCount = isMobile ? 3000 : 8000; // Reduced for mobile
 
         // Helper to generate a Float32Array
         const createBuffer = () => new Float32Array(particleCount * 3);
@@ -648,6 +648,7 @@ interface NeuralMorphParticlesProps {
 
 export default function NeuralMorphParticles({ enabled = true }: NeuralMorphParticlesProps) {
     // No more local state for shape index
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     if (!enabled) return null;
 
@@ -665,7 +666,7 @@ export default function NeuralMorphParticles({ enabled = true }: NeuralMorphPart
         >
 
             <Canvas
-                camera={{ position: [0, 0, 6], fov: 60 }}
+                camera={{ position: [0, 0, isMobile ? 11 : 6], fov: 60 }}
                 dpr={Math.min(window.devicePixelRatio, 2)}
                 gl={{ alpha: true, antialias: true }}
                 eventSource={document.body}
@@ -676,7 +677,7 @@ export default function NeuralMorphParticles({ enabled = true }: NeuralMorphPart
                 <ConstellationGroup />
 
                 {/* Foreground Morphing Particles */}
-                <MorphParticlesScene />
+                <MorphParticlesScene isMobile={isMobile} />
             </Canvas>
         </div>
     );
