@@ -10,7 +10,10 @@ export const useAddObject = (
     const [object, setObject] = useState<THREE.Object3D>();
 
     useEffect(() => {
-        const obj = new type(geometry, material);
+        // Explicitly handle constructor types to satisfy TypeScript constraints
+        const obj = type === THREE.Points
+            ? new THREE.Points(geometry, material)
+            : new THREE.Mesh(geometry, material);
         setObject(obj);
 
         if (scene) {

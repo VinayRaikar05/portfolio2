@@ -8,7 +8,29 @@ import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 import { useAnimation } from '../context/AnimationContext';
 import { generateBlueNoise } from '../utils/BlueNoiseGenerator';
-import { debugVertexShader, debugFragmentShader } from '../shaders/debugShader';
+
+// Removed unused debug shaders imports
+
+const velocityVisVertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position, 1.0);
+  }
+`;
+
+const velocityVisFragmentShader = `
+  uniform sampler2D uVelocityField;
+  uniform float uStrength;
+  varying vec2 vUv;
+
+  void main() {
+    vec2 vel = texture2D(uVelocityField, vUv).rg;
+    float len = length(vel);
+    vec3 color = vec3(vel * 0.5 + 0.5, len * uStrength);
+    gl_FragColor = vec4(color, len * uStrength);
+  }
+`;
 
 interface DistortionLayerProps {
     enabled?: boolean;

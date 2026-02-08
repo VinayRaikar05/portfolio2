@@ -12,26 +12,13 @@ import { useEffect, useRef, useState } from 'react';
 
 const experiences = [
   {
-    title: 'Senior AI/ML Engineer',
-    company: 'TechCorp AI',
-    period: '2022 — Present',
-    description: 'Leading AI team in developing large-scale ML models. Architected recommendation systems serving 10M+ users.',
-    highlights: ['Reduced inference latency by 60%', 'Built end-to-end MLOps pipeline'],
+    title: 'AI/ML Intern',
+    company: 'Visvesvaraya Research and Innovation Foundation',
+    period: '2025 — Present',
+    description: 'Completed a "hands-on internship" focusing on machine learning model development, data preprocessing, and real-world AI applications, strengthening my practical understanding of AI/ML workflows.',
+    highlights: ['Developed ML models', 'Optimized data pipelines'],
   },
-  {
-    title: 'Machine Learning Engineer',
-    company: 'DataDriven Inc',
-    period: '2020 — 2022',
-    description: 'Developed computer vision solutions for autonomous systems. Implemented deep learning models for object detection.',
-    highlights: ['Deployed YOLO system with 95% accuracy', 'Published 3 papers at top conferences'],
-  },
-  {
-    title: 'Data Scientist',
-    company: 'Analytics Pro',
-    period: '2019 — 2020',
-    description: 'Built predictive models for customer churn and fraud detection. Created interactive dashboards for BI.',
-    highlights: ['Improved fraud detection by 35%', 'Won company hackathon'],
-  },
+
 ];
 
 const education = [
@@ -45,7 +32,7 @@ const education = [
     degree: 'Pre University',
     school: 'Govindram Seksaria Science College',
     period: '2020 — 2022',
-    detail: 'Physics Chemistry Mathematics ,Percentage: 89%',
+    detail: 'Physics Chemistry Mathematics',
   },
 ];
 
