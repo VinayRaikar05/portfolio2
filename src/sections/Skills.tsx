@@ -16,30 +16,30 @@ const skillCategories = [
     name: 'Languages',
     icon: Code2,
     skills: [
-      { name: 'Python', level: 95 },
+      { name: 'Python', level: 92 },
       { name: 'SQL', level: 90 },
-      { name: 'R', level: 80 },
-      { name: 'JavaScript', level: 75 },
+      { name: 'R', level: 78 },
+      { name: 'JavaScript', level: 62 },
     ],
   },
   {
     name: 'Frameworks',
     icon: Brain,
     skills: [
-      { name: 'PyTorch', level: 92 },
-      { name: 'TensorFlow', level: 90 },
-      { name: 'Scikit-learn', level: 95 },
-      { name: 'Keras', level: 88 },
+      { name: 'PyTorch', level: 80 },
+      { name: 'TensorFlow', level: 78 },
+      { name: 'Scikit-learn', level: 82 },
+      { name: 'Keras', level: 75 },
     ],
   },
   {
     name: 'Cloud & Infra',
     icon: Cloud,
     skills: [
-      { name: 'AWS', level: 85 },
-      { name: 'Docker', level: 82 },
-      { name: 'Kubernetes', level: 75 },
-      { name: 'GCP', level: 78 },
+      { name: 'AWS', level: 72 },
+      { name: 'Docker', level: 70 },
+      { name: 'Kubernetes', level: 58 },
+      { name: 'GCP', level: 64 },
     ],
   },
   {
@@ -49,7 +49,7 @@ const skillCategories = [
       { name: 'Pandas', level: 95 },
       { name: 'NumPy', level: 92 },
       { name: 'Spark', level: 78 },
-      { name: 'Kafka', level: 70 },
+      { name: 'Kafka', level: 65 },
     ],
   },
   {
@@ -59,17 +59,17 @@ const skillCategories = [
       { name: 'Matplotlib', level: 90 },
       { name: 'Plotly', level: 85 },
       { name: 'Tableau', level: 80 },
-      { name: 'D3.js', level: 70 },
+      { name: 'D3.js', level: 60 },
     ],
   },
   {
     name: 'MLOps',
     icon: Layers,
     skills: [
-      { name: 'MLflow', level: 85 },
-      { name: 'Airflow', level: 80 },
-      { name: 'Git', level: 90 },
-      { name: 'CI/CD', level: 82 },
+      { name: 'MLflow', level: 70 },
+      { name: 'Airflow', level: 68 },
+      { name: 'Git', level: 82 },
+      { name: 'CI/CD', level: 68 },
     ],
   },
 ];
@@ -115,7 +115,7 @@ function SkillCard({ category, index, isInView }: SkillCardProps) {
     >
       {/* Icon */}
       <div className="mb-5">
-        <category.icon className="w-5 h-5 text-white/40" />
+        <category.icon className="w-5 h-5 text-white/60" />
       </div>
 
       {/* Title */}
@@ -129,7 +129,7 @@ function SkillCard({ category, index, isInView }: SkillCardProps) {
           <div key={skillIndex}>
             <div className="flex justify-between text-sm mb-1.5">
               <span className="text-white/70 text-sm">{skill.name}</span>
-              <span className="text-white/40 text-xs">{animatedLevels[skillIndex] || 0}%</span>
+              <span className="text-white/60 text-xs">{animatedLevels[skillIndex] || 0}%</span>
             </div>
             <div className="h-0.5 bg-white/5 rounded-full overflow-hidden">
               <div
@@ -182,7 +182,7 @@ export default function Skills() {
             }`}
           >
             <div className="w-8 h-px bg-white/20" />
-            <span className="text-xs text-white/40 font-light tracking-[0.3em] uppercase">
+            <span className="text-xs text-white/60 font-light tracking-[0.3em] uppercase">
               Skills
             </span>
             <div className="w-8 h-px bg-white/20" />
@@ -197,7 +197,7 @@ export default function Skills() {
           </h2>
 
           <p 
-            className={`text-lg text-white/40 max-w-xl mx-auto font-light transition-all duration-1000 delay-200 ${
+            className={`text-lg text-white/60 max-w-xl mx-auto font-light transition-all duration-1000 delay-200 ${
               isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
@@ -223,12 +223,12 @@ export default function Skills() {
             isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
           }`}
         >
-          <p className="text-xs text-white/30 uppercase tracking-wider mb-4">Tools & Platforms</p>
+          <p className="text-xs text-white/65 uppercase tracking-wider mb-4">Tools & Platforms</p>
           <div className="flex flex-wrap justify-center gap-2">
             {tools.map((tool) => (
               <span
                 key={tool}
-                className="px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-white/50 text-xs hover:border-white/10 hover:text-white/70 transition-all duration-300"
+                className="px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-white/65 text-xs hover:border-white/10 hover:text-white/70 transition-all duration-300"
               >
                 {tool}
               </span>
@@ -239,3 +239,4 @@ export default function Skills() {
     </section>
   );
 }
+

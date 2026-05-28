@@ -57,7 +57,6 @@ function Counter({ value, suffix, isVisible }: { value: number | string; suffix:
 export default function About() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
-  const { state } = useAnimation();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -76,9 +75,6 @@ export default function About() {
     return () => observer.disconnect();
   }, []);
 
-  // Very subtle parallax
-  const parallaxY = (state.sectionProgress - 0.5) * 15;
-
   return (
     <section
       id="about"
@@ -90,14 +86,14 @@ export default function About() {
       <div className="relative z-10 w-full px-6 sm:px-8 lg:px-12 xl:px-16">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center max-w-7xl mx-auto">
           {/* Content */}
-          <div style={{ transform: `translateY(${parallaxY}px)` }}>
+          <div style={{ transform: `translateY(calc((var(--about-section-progress, 0.5) - 0.5) * 15px))` }}>
             {/* Section Label */}
             <div
               className={`flex items-center gap-4 mb-8 transition-all duration-1000 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
                 }`}
             >
               <div className="w-8 h-px bg-white/20" />
-              <span className="text-xs text-white/40 font-light tracking-[0.3em] uppercase">
+              <span className="text-xs text-white/60 font-light tracking-[0.3em] uppercase">
                 About
               </span>
             </div>
@@ -113,7 +109,7 @@ export default function About() {
 
             {/* Description */}
             <div
-              className={`space-y-4 text-white/50 text-lg leading-relaxed mb-12 font-light transition-all duration-1000 delay-200 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              className={`space-y-4 text-white/65 text-lg leading-relaxed mb-12 font-light transition-all duration-1000 delay-200 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
                 }`}
             >
               <p>
@@ -137,7 +133,7 @@ export default function About() {
                   <div className="text-2xl sm:text-3xl font-light text-white mb-1">
                     <Counter value={stat.value} suffix={stat.suffix} isVisible={isInView} />
                   </div>
-                  <div className="text-[10px] text-white/30 uppercase tracking-wider">
+                  <div className="text-[10px] text-white/65 uppercase tracking-wider">
                     {stat.label}
                   </div>
                 </div>
@@ -155,9 +151,9 @@ export default function About() {
                   className="group p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all duration-500"
                   style={{ transitionDelay: `${400 + index * 50}ms` }}
                 >
-                  <item.icon className="w-5 h-5 text-white/40 mb-3 group-hover:text-indigo-400/60 transition-colors" />
+                  <item.icon className="w-5 h-5 text-white/60 mb-3 group-hover:text-indigo-400/60 transition-colors" />
                   <h3 className="text-white/80 font-medium text-sm mb-1">{item.title}</h3>
-                  <p className="text-white/30 text-xs leading-relaxed">{item.description}</p>
+                  <p className="text-white/65 text-xs leading-relaxed">{item.description}</p>
                 </div>
               ))}
             </div>
@@ -167,7 +163,7 @@ export default function About() {
           <div
             className={`relative transition-all duration-1000 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
               }`}
-            style={{ transform: `translateY(${-parallaxY * 0.3}px)` }}
+            style={{ transform: `translateY(calc((var(--about-section-progress, 0.5) - 0.5) * -4.5px))` }}
           >
             <div className="relative aspect-square max-w-md mx-auto">
               {/* Subtle glow */}
@@ -180,7 +176,7 @@ export default function About() {
                     <Brain className="w-8 h-8 text-indigo-400/60" />
                   </div>
                   <h3 className="text-xl font-light text-white/80 mb-2">AI/ML Engineer</h3>
-                  <p className="text-white/30 text-sm">
+                  <p className="text-white/65 text-sm">
                     Building intelligent systems
                   </p>
                 </div>
@@ -192,3 +188,4 @@ export default function About() {
     </section>
   );
 }
+

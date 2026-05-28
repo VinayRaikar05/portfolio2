@@ -13,6 +13,28 @@ import { ArrowUpRight } from 'lucide-react';
 
 const projects = [
   {
+    title: 'System Failure Early Warning Engine',
+    description: 'An AI-powered system monitoring platform that collects real-time system metrics, detects anomalies using Isolation Forest, predicts failures, and explains decisions with SHAP.',
+    tags: ['Python', 'FastAPI', 'Scikit-Learn', 'SHAP', 'SQLite', 'Chart.js', 'Docker'],
+    link: 'https://github.com/VinayRaikar05/SYSTEMANALYZER.git',
+    highlights: [
+      'Developed a real-time feature engineering pipeline extracting 30 ML features from system metrics via psutil',
+      'Integrated SHAP TreeExplainer for decision explainability, a 200-window rolling concept drift detector, and math-based CAPTCHA gating',
+    ],
+    gradient: 'from-[#4f46e5] to-[#7c3aed]',
+  },
+  {
+    title: 'SolarCare Application',
+    description: 'A comprehensive solar system management platform with customized portals and dashboards for customers, technicians, and administrators.',
+    tags: ['React', 'Vite', 'Tailwind CSS', 'Supabase', 'React Router'],
+    link: 'https://github.com/VinayRaikar05/solarcare.git',
+    highlights: [
+      'Designed a multi-role web portal featuring automated customer registration, support ticketing, and technician dispatch systems',
+      'Integrated Supabase for secure session authentication, cloud storage, and responsive PostgreSQL database operations',
+    ],
+    gradient: 'from-[#f59e0b] to-[#ef4444]',
+  },
+  {
     title: 'Rural Care- AI-ready Telemedicine Platform',
     description: 'Engineered a scalable telemedicine platform enabling secure patient data workflows and real-time health record management.',
     tags: ['TypeScript', 'React', 'Node.js', 'Zod', 'Docker'],
@@ -101,7 +123,7 @@ function ProjectCard({ project, index, isInView }: ProjectCardProps) {
           <h3 className="text-xl font-medium text-white mb-2 group-hover:text-indigo-300 transition-colors duration-300">
             {project.title}
           </h3>
-          <p className="text-white/40 text-sm leading-relaxed">
+          <p className="text-white/60 text-sm leading-relaxed">
             {project.description}
           </p>
         </div>
@@ -110,7 +132,7 @@ function ProjectCard({ project, index, isInView }: ProjectCardProps) {
         <div className="mb-6 flex-grow">
           <ul className="space-y-2">
             {project.highlights?.map((highlight, i) => (
-              <li key={i} className="text-white/50 text-xs flex items-start gap-2 leading-relaxed">
+              <li key={i} className="text-white/65 text-xs flex items-start gap-2 leading-relaxed">
                 <span className="mt-1.5 w-1 h-1 rounded-full bg-indigo-400/50 flex-shrink-0" />
                 <span>{highlight}</span>
               </li>
@@ -123,7 +145,7 @@ function ProjectCard({ project, index, isInView }: ProjectCardProps) {
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider rounded-md bg-white/[0.03] text-white/40 border border-white/5 group-hover:border-white/10 group-hover:text-white/60 transition-colors"
+              className="px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider rounded-md bg-white/[0.03] text-white/60 border border-white/5 group-hover:border-white/10 group-hover:text-white/60 transition-colors"
             >
               {tag}
             </span>
@@ -171,7 +193,7 @@ export default function Projects() {
               }`}
           >
             <div className="w-8 h-px bg-white/20" />
-            <span className="text-xs text-white/40 font-light tracking-[0.3em] uppercase">
+            <span className="text-xs text-white/60 font-light tracking-[0.3em] uppercase">
               Projects
             </span>
             <div className="w-8 h-px bg-white/20" />
@@ -185,7 +207,7 @@ export default function Projects() {
           </h2>
 
           <p
-            className={`text-lg text-white/40 max-w-xl mx-auto font-light transition-all duration-1000 delay-200 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+            className={`text-lg text-white/60 max-w-xl mx-auto font-light transition-all duration-1000 delay-200 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
               }`}
           >
             A collection of projects showcasing expertise in intelligent systems
@@ -207,3 +229,4 @@ export default function Projects() {
     </section>
   );
 }
+

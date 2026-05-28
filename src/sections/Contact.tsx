@@ -85,7 +85,7 @@ export default function Contact() {
               }`}
           >
             <div className="w-8 h-px bg-white/20" />
-            <span className="text-xs text-white/40 font-light tracking-[0.3em] uppercase">
+            <span className="text-xs text-white/60 font-light tracking-[0.3em] uppercase">
               Contact
             </span>
             <div className="w-8 h-px bg-white/20" />
@@ -99,7 +99,7 @@ export default function Contact() {
           </h2>
 
           <p
-            className={`text-lg text-white/40 max-w-xl mx-auto font-light transition-all duration-1000 delay-200 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+            className={`text-lg text-white/60 max-w-xl mx-auto font-light transition-all duration-1000 delay-200 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
               }`}
           >
             Have a project in mind? I'd love to hear about it.
@@ -127,7 +127,7 @@ export default function Contact() {
                 <a
                   key={social.label}
                   href={social.href}
-                  className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/40 hover:text-white hover:border-white/10 transition-all duration-300"
+                  className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/60 hover:text-white hover:border-white/10 transition-all duration-300"
                   aria-label={social.label}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -143,7 +143,7 @@ export default function Contact() {
                 <div className="w-2 h-2 rounded-full bg-green-400/60" />
                 <span className="text-white/70 text-sm">Available for work</span>
               </div>
-              <p className="text-white/30 text-xs">
+              <p className="text-white/65 text-xs">
                 Open to new opportunities and collaborations
               </p>
             </div>
@@ -206,3 +206,4 @@ export default function Contact() {
     </section>
   );
 }
+

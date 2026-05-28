@@ -35,7 +35,7 @@ function MorphParticlesScene({ isMobile }: { isMobile: boolean }) {
 
     // 1. Generate geometries for Morphing
     const { geometry, positions, uvs } = useMemo(() => {
-        const particleCount = isMobile ? 3000 : 8000; // Reduced for mobile
+        const particleCount = isMobile ? 6000 : 15000; // Significantly increased for better 3D definition
 
         // Helper to generate a Float32Array
         const createBuffer = () => new Float32Array(particleCount * 3);
@@ -45,29 +45,29 @@ function MorphParticlesScene({ isMobile }: { isMobile: boolean }) {
         const planetPos = createBuffer();
         const planetUvs = createUVBuffer();
         for (let i = 0; i < particleCount; i++) {
-            const isRing = i > particleCount * 0.8; // 20% particles for ring
+            const isRing = i > particleCount * 0.75; // 25% particles for rings
             if (isRing) {
-                // Ring
-                const radius = 3.5 + Math.random() * 1.5;
+                // Multiple ring layers for density
+                const ringLayer = Math.floor(Math.random() * 3);
+                const radius = 3.2 + ringLayer * 0.4 + Math.random() * 0.3;
                 const theta = Math.random() * Math.PI * 2;
-                const drift = (Math.random() - 0.5) * 0.2;
+                const drift = (Math.random() - 0.5) * 0.15;
                 planetPos[i * 3] = radius * Math.cos(theta);
-                planetPos[i * 3 + 1] = drift; // Flat ring
+                planetPos[i * 3 + 1] = drift;
                 planetPos[i * 3 + 2] = radius * Math.sin(theta);
 
                 // Tilt the ring
                 const y = planetPos[i * 3 + 1];
                 const z = planetPos[i * 3 + 2];
-                // Rotate around X
                 const angle = 0.4;
                 planetPos[i * 3 + 1] = y * Math.cos(angle) - z * Math.sin(angle);
                 planetPos[i * 3 + 2] = y * Math.sin(angle) + z * Math.cos(angle);
 
             } else {
-                // Planet Body
+                // Dense planet body with surface detail
                 const theta = 2 * Math.PI * Math.random();
                 const phi = Math.acos(2 * Math.random() - 1);
-                const r = 2.0;
+                const r = 2.0 + (Math.random() - 0.5) * 0.1; // Slight surface variation
                 planetPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
                 planetPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
                 planetPos[i * 3 + 2] = r * Math.cos(phi);
@@ -77,107 +77,206 @@ function MorphParticlesScene({ isMobile }: { isMobile: boolean }) {
             planetUvs[i * 2 + 1] = 0;
         }
 
-        // --- Shape 1: Rocket ---
-        const rocketPos = createBuffer();
-        const rocketUvs = createUVBuffer();
+        // --- Shape 1: Whale (Exact match to diagonal reference image) ---
+        const whalePos = createBuffer();
+        const whaleUvs = createUVBuffer();
+
+        // Rotation angle to match reference
+        const rotationAngle = Math.PI * 0.611; // 110 degrees
+
         for (let i = 0; i < particleCount; i++) {
-            // Distribute particles: Body (60%), Nose (20%), Fins (20%)
             const section = Math.random();
 
-            if (section < 0.6) {
-                // Cylinder Body
-                const h = (Math.random() - 0.5) * 4.0; // Height -2 to 2
-                const r = 0.8;
+            if (section < 0.55) {
+                // Main Body - High density, streamlined profile
+                const t = Math.random(); // 0=head, 1=tail
                 const theta = Math.random() * Math.PI * 2;
-                rocketPos[i * 3] = r * Math.cos(theta);
-                rocketPos[i * 3 + 1] = h; // Up/Down
-                rocketPos[i * 3 + 2] = r * Math.sin(theta);
+
+                // Precise body radius profile
+                let radius;
+                if (t < 0.10) {
+                    // Pointed head/rostrum
+                    radius = t * 4.5;
+                } else if (t < 0.22) {
+                    // Head expansion
+                    const lt = (t - 0.10) / 0.12;
+                    radius = 0.45 + lt * 0.50;
+                } else if (t < 0.40) {
+                    // Throat to mid-body
+                    const lt = (t - 0.22) / 0.18;
+                    radius = 0.95 + lt * 0.20;
+                } else if (t < 0.60) {
+                    // Maximum girth
+                    const lt = (t - 0.40) / 0.20;
+                    radius = 1.15 + Math.sin(lt * Math.PI) * 0.10;
+                } else if (t < 0.78) {
+                    // Tail taper
+                    const lt = (t - 0.60) / 0.18;
+                    radius = 1.15 * (1 - lt * 0.68);
+                } else if (t < 0.92) {
+                    // Tail stock
+                    const lt = (t - 0.78) / 0.14;
+                    radius = 0.37 * (1 - lt * 0.60);
+                } else {
+                    // Caudal peduncle
+                    const lt = (t - 0.92) / 0.08;
+                    radius = 0.15 * (1 - lt * 0.50);
+                }
+
+                const x = (t - 0.5) * 11.0;
+                const r = radius * (0.98 + Math.random() * 0.04);
+
+                const y = r * Math.cos(theta);
+                const z = r * Math.sin(theta) * 0.72;
+
+                // Apply rotation for diagonal swim
+                whalePos[i * 3] = x * Math.cos(rotationAngle) - z * Math.sin(rotationAngle);
+                whalePos[i * 3 + 1] = y;
+                whalePos[i * 3 + 2] = x * Math.sin(rotationAngle) + z * Math.cos(rotationAngle);
             }
-            else if (section < 0.8) {
-                // Nose Cone (Top)
-                const h = Math.random() * 1.5; // 0 to 1.5
-                const r = 0.8 * (1 - h / 1.5); // Taper
-                const theta = Math.random() * Math.PI * 2;
-                rocketPos[i * 3] = r * Math.cos(theta);
-                rocketPos[i * 3 + 1] = 2.0 + h; // Start at top of body
-                rocketPos[i * 3 + 2] = r * Math.sin(theta);
+            else if (section < 0.68) {
+                // Tail Flukes - Very wide, horizontal
+                const side = Math.random() > 0.5 ? 1 : -1;
+                const spanPos = Math.random();
+
+                const span = 1.5 + spanPos * 2.8;
+                const thickness = 0.05 * (1 - spanPos * 0.45);
+                const sweep = spanPos * 0.50;
+                const upturn = Math.pow(spanPos, 1.8) * 0.40;
+
+                const x = -5.5 - sweep;
+                const y = side * span;
+                const z = (Math.random() - 0.5) * thickness + upturn;
+
+                // Apply rotation
+                whalePos[i * 3] = x * Math.cos(rotationAngle) - z * Math.sin(rotationAngle);
+                whalePos[i * 3 + 1] = y;
+                whalePos[i * 3 + 2] = x * Math.sin(rotationAngle) + z * Math.cos(rotationAngle);
+            }
+            else if (section < 0.84) {
+                // Pectoral Fins - Long, extending downward
+                const side = Math.random() > 0.5 ? 1 : -1;
+                const chordPos = Math.random();
+
+                const x = 2.0 - chordPos * 2.2;
+                const y = side * (1.20 + chordPos * 0.60);
+                const z = -0.20 - chordPos * 2.5;
+
+                // Apply rotation
+                whalePos[i * 3] = x * Math.cos(rotationAngle) - z * Math.sin(rotationAngle);
+                whalePos[i * 3 + 1] = y;
+                whalePos[i * 3 + 2] = x * Math.sin(rotationAngle) + z * Math.cos(rotationAngle);
+            }
+            else if (section < 0.91) {
+                // Dorsal Fin
+                const finPos = Math.random();
+                const height = 0.80 + finPos * 0.60;
+                const thickness = 0.14 * (1 - finPos);
+                const curve = finPos * 0.50;
+
+                const x = -3.0 - curve;
+                const y = (Math.random() - 0.5) * thickness;
+                const z = 0.95 + height;
+
+                // Apply rotation
+                whalePos[i * 3] = x * Math.cos(rotationAngle) - z * Math.sin(rotationAngle);
+                whalePos[i * 3 + 1] = y;
+                whalePos[i * 3 + 2] = x * Math.sin(rotationAngle) + z * Math.cos(rotationAngle);
+            }
+            else if (section < 0.97) {
+                // Ventral pleats
+                const grooveNum = Math.floor(Math.random() * 16);
+                const grooveSpacing = (grooveNum - 7.5) * 0.09;
+                const alongBody = Math.random() * 0.40;
+
+                const x = (alongBody - 0.5) * 11.0;
+                const y = grooveSpacing;
+                const z = -0.85 - Math.random() * 0.20;
+
+                // Apply rotation
+                whalePos[i * 3] = x * Math.cos(rotationAngle) - z * Math.sin(rotationAngle);
+                whalePos[i * 3 + 1] = y;
+                whalePos[i * 3 + 2] = x * Math.sin(rotationAngle) + z * Math.cos(rotationAngle);
             }
             else {
-                // Fins (Bottom)
-                const finIndex = Math.floor(Math.random() * 3); // 3 fins
-                const angleOffset = (Math.PI * 2 / 3) * finIndex;
-                const w = Math.random() * 1.5; // Width out
-                const h = Math.random() * 1.5; // Height up
-                // Flat plane rotated
-                const localX = 0.8 + w;
-                const localY = -2.0 + h * 0.5; // Base
-                const thickness = (Math.random() - 0.5) * 0.1;
+                // Head details
+                const detail = Math.random();
 
-                // Rotate fin to correct angle
-                const cosA = Math.cos(angleOffset);
-                const sinA = Math.sin(angleOffset);
+                if (detail < 0.5) {
+                    const side = Math.random() > 0.5 ? 1 : -1;
+                    const x = 3.8 + (Math.random() - 0.5) * 0.5;
+                    const y = side * (0.75 + Math.random() * 0.20);
+                    const z = 0.35 + Math.random() * 0.20;
 
-                rocketPos[i * 3] = localX * cosA - thickness * sinA;
-                rocketPos[i * 3 + 1] = localY;
-                rocketPos[i * 3 + 2] = localX * sinA + thickness * cosA;
+                    whalePos[i * 3] = x * Math.cos(rotationAngle) - z * Math.sin(rotationAngle);
+                    whalePos[i * 3 + 1] = y;
+                    whalePos[i * 3 + 2] = x * Math.sin(rotationAngle) + z * Math.cos(rotationAngle);
+                } else {
+                    const r = Math.random() * 0.20;
+                    const theta = Math.random() * Math.PI * 2;
+                    const x = 5.3 + Math.random() * 0.4;
+                    const y = r * Math.cos(theta);
+                    const z = r * Math.sin(theta) * 0.70;
+
+                    whalePos[i * 3] = x * Math.cos(rotationAngle) - z * Math.sin(rotationAngle);
+                    whalePos[i * 3 + 1] = y;
+                    whalePos[i * 3 + 2] = x * Math.sin(rotationAngle) + z * Math.cos(rotationAngle);
+                }
             }
 
-            // Tilt rocket to fly diagonally
-            const x = rocketPos[i * 3];
-            const y = rocketPos[i * 3 + 1];
-            // Rotate Z -45deg
-            const angle = -Math.PI / 4;
-            rocketPos[i * 3] = x * Math.cos(angle) - y * Math.sin(angle);
-            rocketPos[i * 3 + 1] = x * Math.sin(angle) + y * Math.cos(angle);
-
-            rocketUvs[i * 2] = i / particleCount;
-            rocketUvs[i * 2 + 1] = 0.33;
+            whaleUvs[i * 2] = i / particleCount;
+            whaleUvs[i * 2 + 1] = 0.33;
         }
 
-        // --- Shape 2: Spacestation ---
+        // --- Shape 2: Spacestation (Detailed 3D) ---
         const stationPos = createBuffer();
         const stationUvs = createUVBuffer();
         for (let i = 0; i < particleCount; i++) {
             const section = Math.random();
-            if (section < 0.7) {
-                // Main Torus Ring
+
+            if (section < 0.65) {
+                // Main Torus Ring - Dense and volumetric
                 const u = Math.random() * Math.PI * 2;
                 const v = Math.random() * Math.PI * 2;
-                const R = 3.0; // Main Radius
-                const r = 0.4; // Tube Radius
+                const R = 3.2; // Main radius
+                const r = 0.5; // Tube radius
 
-                const x = (R + r * Math.cos(v)) * Math.cos(u);
-                const y = (R + r * Math.cos(v)) * Math.sin(u);
+                // Add some variation for structural detail
+                const variation = 1 + (Math.random() - 0.5) * 0.1;
+
+                const x = (R + r * Math.cos(v)) * Math.cos(u) * variation;
+                const y = (R + r * Math.cos(v)) * Math.sin(u) * variation;
                 const z = r * Math.sin(v);
 
                 stationPos[i * 3] = x;
                 stationPos[i * 3 + 1] = y;
                 stationPos[i * 3 + 2] = z;
-            } else {
-                // Central Hub + Spokes
-                const isSpoke = Math.random() > 0.5;
-                if (isSpoke) {
-                    // Spokes
-                    const k = Math.floor(Math.random() * 4); // 4 spokes
-                    const angle = (Math.PI / 2) * k;
-                    const dist = Math.random() * 3.0;
-                    stationPos[i * 3] = dist * Math.cos(angle);
-                    stationPos[i * 3 + 1] = dist * Math.sin(angle);
-                    stationPos[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
-                } else {
-                    // Center Sphere
-                    const r = 0.8;
-                    const theta = Math.random() * Math.PI * 2;
-                    const phi = Math.acos(2 * Math.random() - 1);
-                    stationPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-                    stationPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-                    stationPos[i * 3 + 2] = r * Math.cos(phi);
-                }
             }
-            // Tilt Station
+            else if (section < 0.85) {
+                // Spokes connecting to center - 6 spokes for detail
+                const spokeIndex = Math.floor(Math.random() * 6);
+                const angle = (Math.PI / 3) * spokeIndex;
+                const dist = Math.random() * 3.2;
+                const thickness = (Math.random() - 0.5) * 0.15;
+
+                stationPos[i * 3] = dist * Math.cos(angle) + thickness;
+                stationPos[i * 3 + 1] = dist * Math.sin(angle) + thickness;
+                stationPos[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+            }
+            else {
+                // Central Hub - Larger sphere with detail
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                const r = 0.9 + Math.random() * 0.2; // Varied radius
+
+                stationPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                stationPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                stationPos[i * 3 + 2] = r * Math.cos(phi);
+            }
+
+            // Tilt station for dynamic view
             const y = stationPos[i * 3 + 1];
             const z = stationPos[i * 3 + 2];
-            // Rotate X 60deg
             const angle = Math.PI / 3;
             stationPos[i * 3 + 1] = y * Math.cos(angle) - z * Math.sin(angle);
             stationPos[i * 3 + 2] = y * Math.sin(angle) + z * Math.cos(angle);
@@ -186,13 +285,13 @@ function MorphParticlesScene({ isMobile }: { isMobile: boolean }) {
             stationUvs[i * 2 + 1] = 0.66;
         }
 
-        // --- Sequence: Planet (0) -> Rocket (1) -> Spacestation (2) -> Planet (0) ---
+        // --- Sequence: Planet (0) -> Whale (1) -> Spacestation (2) -> Planet (0) ---
         return {
             geometry: new THREE.SphereGeometry(2, 64, 64),
-            positions: [planetPos, rocketPos, stationPos, planetPos],
-            uvs: [planetUvs, rocketUvs, stationUvs, planetUvs],
+            positions: [planetPos, whalePos, stationPos, planetPos],
+            uvs: [planetUvs, whaleUvs, stationUvs, planetUvs],
         };
-    }, []);
+    }, [isMobile]);
 
     // 2. Initialize Hook
     const [updateMorphParticles, , { points }] = useMorphParticles({
@@ -249,7 +348,7 @@ function MorphParticlesScene({ isMobile }: { isMobile: boolean }) {
         });
 
         // Smooth Lerp to scroll target
-        const speed = 4.5 * state.clock.getDelta(); // Increased speed (~50% faster)
+        const speed = 8.0 * state.clock.getDelta(); // Significantly increased for faster transformations
         const diff = scrollTargetRef.current - progressRef.value;
         if (Math.abs(diff) > 0.001) {
             progressRef.value += diff * speed;
@@ -682,3 +781,4 @@ export default function NeuralMorphParticles({ enabled = true }: NeuralMorphPart
         </div>
     );
 }
+

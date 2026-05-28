@@ -26,10 +26,6 @@ const SECTIONS = [
 export default function ScrollController() {
   const { 
     setSection, 
-    setScrollProgress, 
-    setSectionProgress, 
-    setScrollVelocity,
-    setTransitionProgress,
     uniformsRef,
   } = useAnimation();
   
@@ -41,6 +37,7 @@ export default function ScrollController() {
   
   // Smoothed velocity for calmer feel
   const smoothedVelocityRef = useRef(0);
+  const currentSectionRef = useRef('home');
 
   // Calculate scroll progress
   const calculateScrollProgress = useCallback(() => {
@@ -66,38 +63,41 @@ export default function ScrollController() {
     return Math.max(0, Math.min(1, (progress - section.start) / sectionRange));
   }, []);
 
-  // Main scroll handler
+  // Main scroll handler (ultra-light, directly writes to uniforms and CSS variables)
   const handleScroll = useCallback(() => {
     if (!isActiveRef.current) return;
 
     const now = Date.now();
     const currentScrollY = window.scrollY;
-    const deltaTime = now - lastScrollTime.current;
+    const deltaTime = Math.max(1, now - lastScrollTime.current);
     
     // Calculate raw velocity
-    if (deltaTime > 0) {
-      const deltaY = currentScrollY - lastScrollY.current;
-      const rawVelocity = Math.abs(deltaY / deltaTime) * 1000;
-      // Gentler velocity accumulation
-      velocityRef.current = velocityRef.current * 0.7 + rawVelocity * 0.3;
-    }
+    const deltaY = currentScrollY - lastScrollY.current;
+    const rawVelocity = Math.abs(deltaY / deltaTime) * 1000;
+    
+    // Smooth raw velocity accumulation
+    velocityRef.current = velocityRef.current * 0.5 + rawVelocity * 0.5;
 
     // Calculate progress
     const progress = calculateScrollProgress();
     const section = getCurrentSection(progress);
     const sectionProgress = calculateSectionProgress(progress, section);
 
-    // Smooth velocity for calmer feel
-    smoothedVelocityRef.current += (velocityRef.current - smoothedVelocityRef.current) * 0.15;
-
-    // Update React state
-    setScrollProgress(progress);
-    setSectionProgress(sectionProgress);
-    setScrollVelocity(Math.min(smoothedVelocityRef.current / 800, 1));
-    setSection(section.id);
+    // Update WebGL uniforms directly (runs in GPU space, zero React overhead)
+    uniformsRef.current.uScrollProgress = progress;
+    uniformsRef.current.uSectionProgress = sectionProgress;
+    
+    const sectionMap: Record<string, number> = {
+      home: 0,
+      about: 1,
+      skills: 2,
+      projects: 3,
+      experience: 4,
+      contact: 5,
+    };
+    uniformsRef.current.uSectionIndex = sectionMap[section.id] ?? 0;
 
     // Calculate calm factor (increases with progress)
-    // Home: 0.0, Contact: ~0.85
     const targetCalm = progress * 0.7 + SECTIONS.findIndex(s => s.id === section.id) * 0.05;
     uniformsRef.current.uCalmFactor = Math.min(targetCalm, 0.9);
 
@@ -110,43 +110,73 @@ export default function ScrollController() {
     } else {
       transitionProgress = 1;
     }
-    
-    setTransitionProgress(transitionProgress);
+    uniformsRef.current.uTransitionProgress = transitionProgress;
 
-    // Update refs
+    // Direct DOM CSS Variables updates (GPU-accelerated, zero React re-renders)
+    document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
+    document.documentElement.style.setProperty('--hero-section-progress', (section.id === 'home' ? sectionProgress : (progress > 0.15 ? 1 : 0)).toFixed(4));
+    document.documentElement.style.setProperty('--about-section-progress', (section.id === 'about' ? sectionProgress : (progress < 0.15 ? 0 : 1)).toFixed(4));
+
+    // Update React state ONLY when active section actually changes (low frequency, max 6 times per page scroll)
+    if (currentSectionRef.current !== section.id) {
+      currentSectionRef.current = section.id;
+      setSection(section.id);
+    }
+
+    // Update refs for next iteration
     lastScrollY.current = currentScrollY;
     lastScrollTime.current = now;
-
-    // Velocity decay
-    rafRef.current = requestAnimationFrame(() => {
-      velocityRef.current *= 0.92;
-      smoothedVelocityRef.current += (velocityRef.current - smoothedVelocityRef.current) * 0.1;
-      setScrollVelocity(Math.min(smoothedVelocityRef.current / 800, 1));
-    });
   }, [
     calculateScrollProgress, 
     getCurrentSection, 
     calculateSectionProgress,
-    setScrollProgress, 
-    setSectionProgress, 
-    setScrollVelocity, 
     setSection,
-    setTransitionProgress,
     uniformsRef,
   ]);
 
-  // Passive scroll listener
+  // Single Animation Frame Loop for decay and uTime updates
+  useEffect(() => {
+    let lastFrameTime = Date.now();
+    
+    const updateLoop = () => {
+      if (!isActiveRef.current) {
+        rafRef.current = requestAnimationFrame(updateLoop);
+        return;
+      }
+      
+      const now = Date.now();
+      const deltaTime = Math.max(1, now - lastFrameTime);
+      lastFrameTime = now;
+      
+      // Decay velocity smoothly with delta-time compatibility
+      velocityRef.current *= Math.pow(0.92, deltaTime / 16.6);
+      smoothedVelocityRef.current += (velocityRef.current - smoothedVelocityRef.current) * (1 - Math.pow(0.85, deltaTime / 16.6));
+      
+      // Write smoothed velocity directly to uniforms
+      uniformsRef.current.uScrollVelocity = Math.min(smoothedVelocityRef.current / 800, 1);
+      
+      // Update global time uniform for continuous particle morphing
+      uniformsRef.current.uTime = now * 0.001;
+      
+      rafRef.current = requestAnimationFrame(updateLoop);
+    };
+    
+    rafRef.current = requestAnimationFrame(updateLoop);
+    
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [uniformsRef]);
+
+  // Passive scroll listener for maximum browser responsiveness
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      cancelAnimationFrame(rafRef.current);
     };
   }, [handleScroll]);
 
-  // Visibility change handler
+  // Visibility change handler to suspend animation frame loop when page is hidden
   useEffect(() => {
     const handleVisibilityChange = () => {
       isActiveRef.current = document.visibilityState === 'visible';
@@ -158,3 +188,4 @@ export default function ScrollController() {
 
   return null;
 }
+

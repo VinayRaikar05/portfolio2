@@ -7,9 +7,10 @@
  * - Appears on scroll
  * - No aggressive transitions
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useAnimation } from '../context/AnimationContext';
+import ThemeToggle from './ThemeToggle';
 
 const navLinks = [
   { name: 'Home', href: '#home' },
@@ -22,10 +23,22 @@ const navLinks = [
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { state } = useAnimation();
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Show background when scrolled past hero
-  const isScrolled = state.scrollProgress > 0.08;
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsScrolled(window.scrollY > 80);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 80;
+      setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -66,15 +79,16 @@ export default function Navigation() {
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleLinkClick(e, link.href)}
-                  className="text-xs text-white/40 hover:text-white/70 transition-colors tracking-wide"
+                  className="text-xs text-white/60 hover:text-white/70 transition-colors tracking-wide"
                 >
                   {link.name}
                 </a>
               ))}
             </div>
 
-            {/* CTA */}
-            <div className="hidden lg:block">
+            {/* CTA & Theme Toggle */}
+            <div className="hidden lg:flex items-center gap-3">
+              <ThemeToggle />
               <a
                 href="https://drive.google.com/file/d/1MOVS2hP7kQrUphLxmerklc5EOtgIDw4v/view?usp=drive_link"
                 target="_blank"
@@ -122,3 +136,4 @@ export default function Navigation() {
     </>
   );
 }
+

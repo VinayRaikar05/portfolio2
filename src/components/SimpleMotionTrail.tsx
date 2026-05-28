@@ -118,3 +118,4 @@ export default function SimpleMotionTrail({ enabled = true }: SimpleMotionTrailP
 
     return null;
 }
+

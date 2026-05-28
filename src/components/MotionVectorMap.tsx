@@ -310,3 +310,4 @@ export default function MotionVectorMap({
     // This component doesn't render anything visible - it only manages render targets
     return null;
 }
+

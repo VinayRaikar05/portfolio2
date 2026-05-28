@@ -79,7 +79,7 @@ export default function Experience() {
               }`}
           >
             <div className="w-8 h-px bg-white/20" />
-            <span className="text-xs text-white/40 font-light tracking-[0.3em] uppercase">
+            <span className="text-xs text-white/60 font-light tracking-[0.3em] uppercase">
               Experience
             </span>
             <div className="w-8 h-px bg-white/20" />
@@ -97,7 +97,7 @@ export default function Experience() {
           {/* Work Experience */}
           <div>
             <h3
-              className={`text-xs text-white/30 uppercase tracking-wider mb-8 transition-all duration-1000 ${isInView ? 'opacity-100' : 'opacity-0'
+              className={`text-xs text-white/65 uppercase tracking-wider mb-8 transition-all duration-1000 ${isInView ? 'opacity-100' : 'opacity-0'
                 }`}
             >
               Work Experience
@@ -117,15 +117,15 @@ export default function Experience() {
                   {/* Content */}
                   <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
                     <h4 className="text-white/80 font-medium">{exp.title}</h4>
-                    <span className="text-white/30 text-sm">{exp.period}</span>
+                    <span className="text-white/65 text-sm">{exp.period}</span>
                   </div>
 
-                  <p className="text-white/50 text-sm mb-2">{exp.company}</p>
-                  <p className="text-white/40 text-sm leading-relaxed mb-3">{exp.description}</p>
+                  <p className="text-white/65 text-sm mb-2">{exp.company}</p>
+                  <p className="text-white/60 text-sm leading-relaxed mb-3">{exp.description}</p>
 
                   <div className="flex flex-wrap gap-2">
                     {exp.highlights.map((highlight) => (
-                      <span key={highlight} className="text-[10px] text-white/30 bg-white/[0.03] px-2 py-1 rounded">
+                      <span key={highlight} className="text-[10px] text-white/65 bg-white/[0.03] px-2 py-1 rounded">
                         {highlight}
                       </span>
                     ))}
@@ -138,7 +138,7 @@ export default function Experience() {
           {/* Education & Certs */}
           <div>
             <h3
-              className={`text-xs text-white/30 uppercase tracking-wider mb-8 transition-all duration-1000 delay-300 ${isInView ? 'opacity-100' : 'opacity-0'
+              className={`text-xs text-white/65 uppercase tracking-wider mb-8 transition-all duration-1000 delay-300 ${isInView ? 'opacity-100' : 'opacity-0'
                 }`}
             >
               Education
@@ -154,16 +154,16 @@ export default function Experience() {
                 >
                   <div>
                     <h4 className="text-white/70 font-medium">{edu.degree}</h4>
-                    <p className="text-white/40 text-sm">{edu.school}</p>
-                    <p className="text-white/30 text-xs">{edu.detail}</p>
+                    <p className="text-white/60 text-sm">{edu.school}</p>
+                    <p className="text-white/65 text-xs">{edu.detail}</p>
                   </div>
-                  <span className="text-white/30 text-sm">{edu.period}</span>
+                  <span className="text-white/65 text-sm">{edu.period}</span>
                 </div>
               ))}
             </div>
 
             <h3
-              className={`text-xs text-white/30 uppercase tracking-wider mb-6 transition-all duration-1000 delay-500 ${isInView ? 'opacity-100' : 'opacity-0'
+              className={`text-xs text-white/65 uppercase tracking-wider mb-6 transition-all duration-1000 delay-500 ${isInView ? 'opacity-100' : 'opacity-0'
                 }`}
             >
               Certifications
@@ -173,7 +173,7 @@ export default function Experience() {
               {certifications.map((cert, index) => (
                 <span
                   key={cert}
-                  className={`px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-white/50 text-xs transition-all duration-500 ${isInView ? 'opacity-100' : 'opacity-0'
+                  className={`px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-white/65 text-xs transition-all duration-500 ${isInView ? 'opacity-100' : 'opacity-0'
                     }`}
                   style={{ transitionDelay: `${600 + index * 100}ms` }}
                 >
@@ -187,3 +187,4 @@ export default function Experience() {
     </section>
   );
 }
+

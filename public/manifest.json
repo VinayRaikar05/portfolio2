@@ -1,0 +1,24 @@
+{
+    "name": "Vinay Raikar Portfolio",
+    "short_name": "VR Portfolio",
+    "description": "AI/ML Engineer Portfolio - Building intelligent systems",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#050505",
+    "theme_color": "#050505",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/favicon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

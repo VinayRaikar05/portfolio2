@@ -10,22 +10,32 @@
     --foreground: 0 0% 100%;
     --primary: 243 75% 59%;
   }
+
+  .light {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
+    --primary: 243 75% 59%;
+  }
 }
 
 @layer base {
   * {
     @apply border-white/5;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply bg-[#080808] text-white antialiased;
     font-family: 'Inter', system-ui, sans-serif;
     font-weight: 300;
     overflow-x: hidden;
+  }
+
+  .light body {
+    @apply bg-gray-50 text-gray-900;
   }
 }
 
@@ -78,6 +88,7 @@
 
 /* Reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

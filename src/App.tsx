@@ -5,8 +5,10 @@
  * All section transitions are driven by WebGL camera movement and shader uniforms.
  * No CSS page transitions - pure GPU-driven motion.
  */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimationProvider } from './context/AnimationContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingScreen from './components/LoadingScreen';
 import './App.css';
 
 // Persistent WebGL layer
@@ -19,15 +21,19 @@ import NeuralMorphParticles from './components/NeuralMorphParticles';
 
 // DOM Content
 import Navigation from './components/Navigation';
+import ScrollToTop from './components/ScrollToTop';
 import Hero from './sections/Hero';
 import About from './sections/About';
 import Skills from './sections/Skills';
 import Projects from './sections/Projects';
 import Experience from './sections/Experience';
+import Certifications from './sections/Certifications';
 import Contact from './sections/Contact';
 import Footer from './sections/Footer';
 
 function AppContent() {
+  const [isLoading, setIsLoading] = useState(true);
+
   // Reduced motion detection
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -38,6 +44,8 @@ function AppContent() {
 
   return (
     <div className="relative min-h-screen">
+      {/* Loading Screen */}
+      {isLoading && <LoadingScreen onLoadComplete={() => setIsLoading(false)} />}
 
 
       {/* Neural Network Morphing Particles */}
@@ -64,21 +72,28 @@ function AppContent() {
         <Skills />
         <Projects />
         <Experience />
+        <Certifications />
         <Contact />
       </main>
 
       {/* Footer */}
       <Footer />
+
+      {/* Scroll to Top Button */}
+      <ScrollToTop />
     </div>
   );
 }
 
 function App() {
   return (
-    <AnimationProvider>
-      <AppContent />
-    </AnimationProvider>
+    <ErrorBoundary>
+      <AnimationProvider>
+        <AppContent />
+      </AnimationProvider>
+    </ErrorBoundary>
   );
 }
 
 export default App;
+

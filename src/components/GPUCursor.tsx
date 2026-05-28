@@ -15,7 +15,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useAnimation } from '../context/AnimationContext';
 
 export default function GPUCursor() {
-  const { setCursorPosition, uniformsRef } = useAnimation();
+  const { uniformsRef } = useAnimation();
   
   // Target and current positions for inertia
   const targetRef = useRef({ x: 0, y: 0 });
@@ -51,11 +51,8 @@ export default function GPUCursor() {
     // Update uniforms directly (no React re-render)
     uniformsRef.current.uCursorPosition = [currentRef.current.x, currentRef.current.y];
     
-    // Also update React state for any DOM components that need it
-    setCursorPosition(currentRef.current.x, currentRef.current.y);
-
     rafRef.current = requestAnimationFrame(animateCursor);
-  }, [setCursorPosition, uniformsRef]);
+  }, [uniformsRef]);
 
   useEffect(() => {
     // Detect touch device
@@ -88,3 +85,4 @@ export default function GPUCursor() {
   // No visual output - cursor influence is purely through uniforms
   return null;
 }
+
