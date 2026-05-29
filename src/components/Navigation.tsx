@@ -9,7 +9,6 @@
  */
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useAnimation } from '../context/AnimationContext';
 import ThemeToggle from './ThemeToggle';
 
 const navLinks = [

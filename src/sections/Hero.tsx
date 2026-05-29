@@ -11,7 +11,6 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { ArrowDown } from 'lucide-react';
-import { useAnimation } from '../context/AnimationContext';
 
 export default function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);

@@ -10,7 +10,6 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { Brain, Code2, Database, LineChart } from 'lucide-react';
-import { useAnimation } from '../context/AnimationContext';
 
 const stats = [
   { value: 1, suffix: '+', label: 'Years' },
