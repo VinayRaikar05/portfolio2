@@ -14,7 +14,7 @@ const experiences = [
   {
     title: 'AI/ML Intern',
     company: 'Visvesvaraya Research and Innovation Foundation',
-    period: '2025 — Present',
+    period: 'December 2025 — April 2026 ',
     description: 'Completed a "hands-on internship" focusing on machine learning model development, data preprocessing, and real-world AI applications, strengthening my practical understanding of AI/ML workflows.',
     highlights: ['Developed ML models', 'Optimized data pipelines'],
   },
