@@ -36,11 +36,7 @@ const education = [
   },
 ];
 
-const certifications = [
-  'AI & Data Science By IIT INDORE',
-  'Postman API Student Expert',
-  'Oracle Certified Data Science professional 2025',
-];
+
 
 export default function Experience() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -162,25 +158,6 @@ export default function Experience() {
               ))}
             </div>
 
-            <h3
-              className={`text-xs text-white/65 uppercase tracking-wider mb-6 transition-all duration-1000 delay-500 ${isInView ? 'opacity-100' : 'opacity-0'
-                }`}
-            >
-              Certifications
-            </h3>
-
-            <div className="flex flex-wrap gap-2">
-              {certifications.map((cert, index) => (
-                <span
-                  key={cert}
-                  className={`px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-white/65 text-xs transition-all duration-500 ${isInView ? 'opacity-100' : 'opacity-0'
-                    }`}
-                  style={{ transitionDelay: `${600 + index * 100}ms` }}
-                >
-                  {cert}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </div>

@@ -6,32 +6,32 @@ import { Award, ExternalLink } from 'lucide-react';
 
 const certifications = [
     {
-        name: 'TensorFlow Developer Certificate',
-        issuer: 'Google',
-        date: '2023',
+        name: 'Postman API Fundamentals Student Expert',
+        issuer: 'Postman',
+        date: '2025',
         link: '#', // Replace with actual verification link
         status: 'completed',
     },
     {
-        name: 'AWS Certified Machine Learning - Specialty',
-        issuer: 'Amazon Web Services',
-        date: '2023',
-        link: '#',
-        status: 'completed',
-    },
-    {
-        name: 'Deep Learning Specialization',
-        issuer: 'DeepLearning.AI',
-        date: '2022',
-        link: '#',
-        status: 'completed',
-    },
-    {
-        name: 'MLOps Engineering',
-        issuer: 'Coursera',
-        date: '2024',
+        name: 'AI & Data Science By IIT INDORE',
+        issuer: 'IIT INDORE, Intellipaat',
+        date: '2025-26',
         link: '#',
         status: 'in-progress',
+    },
+    {
+        name: 'Oracle cloud Infrastructure 2025 Certified Data Science Professional ',
+        issuer: 'Oracle',
+        date: '2025',
+        link: '#',
+        status: 'completed',
+    },
+    {
+        name: 'Oracle cloud Infrastructure 2025 Certified AI Foundations Associate',
+        issuer: 'Oracle',
+        date: '2025',
+        link: '#',
+        status: 'completed',
     },
 ];
 
