@@ -19,8 +19,8 @@ const stats = [
 ];
 
 const expertise = [
-  { icon: Brain, title: 'Deep Learning', description: 'Neural networks, CNNs, RNNs, Transformers' },
-  { icon: Code2, title: 'ML Systems', description: 'End-to-end pipelines, model deployment, scaling' },
+  { icon: Brain, title: 'Machine Learning', description: 'Algorithms, Deep learning models, Neural networks' },
+  { icon: Code2, title: 'AI Tools', description: 'Chat GPT, Claude, Gemini, Copilot, Local LLMs' },
   { icon: Database, title: 'Data Visualization', description: 'Matplotlib, Seaborn, Plotly, Power BI' },
   { icon: LineChart, title: 'MLOps', description: 'CI/CD, monitoring, production systems' },
 ];
@@ -174,9 +174,9 @@ export default function About() {
                   <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center mb-6 mx-auto">
                     <Brain className="w-8 h-8 text-indigo-400/60" />
                   </div>
-                  <h3 className="text-xl font-light text-white/80 mb-2">AI/ML Engineer</h3>
+                  <h3 className="text-xl font-light text-white/80 mb-2">Data Science & ML Enthusiast</h3>
                   <p className="text-white/65 text-sm">
-                    Building intelligent systems
+                    Transform Data into Decisions
                   </p>
                 </div>
               </div>

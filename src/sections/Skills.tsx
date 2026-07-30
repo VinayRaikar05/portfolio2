@@ -38,8 +38,8 @@ const skillCategories = [
     skills: [
       { name: 'AWS', level: 72 },
       { name: 'Docker', level: 70 },
-      { name: 'Kubernetes', level: 58 },
-      { name: 'GCP', level: 64 },
+      { name: 'Azure', level: 50 },
+      { name: 'GCP', level: 50 },
     ],
   },
   {
@@ -58,8 +58,8 @@ const skillCategories = [
     skills: [
       { name: 'Matplotlib', level: 90 },
       { name: 'Plotly', level: 85 },
-      { name: 'Tableau', level: 80 },
-      { name: 'D3.js', level: 60 },
+      { name: 'Power BI', level: 80 },
+      { name: 'Tableau', level: 60 },
     ],
   },
   {
@@ -75,8 +75,8 @@ const skillCategories = [
 ];
 
 const tools = [
-  'Jupyter', 'VS Code', 'GitHub', 'Docker', 'Weights & Biases', 
-  'TensorBoard', 'Anaconda', 'DVC', 'Feast'
+  'Jupyter', 'VS Code', 'GitHub', 'Docker', 'SQL Managenent Studio',
+  'TensorBoard', 'Anaconda', 'Antigravity', 'colab', 'Postman'
 ];
 
 interface SkillCardProps {
@@ -90,7 +90,7 @@ function SkillCard({ category, index, isInView }: SkillCardProps) {
 
   useEffect(() => {
     if (!isInView) return;
-    
+
     const timeouts: ReturnType<typeof setTimeout>[] = [];
     category.skills.forEach((skill, skillIndex) => {
       const timeout = setTimeout(() => {
@@ -108,9 +108,8 @@ function SkillCard({ category, index, isInView }: SkillCardProps) {
 
   return (
     <div
-      className={`relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm hover:border-white/10 hover:bg-white/[0.03] transition-all duration-700 ${
-        isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}
+      className={`relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm hover:border-white/10 hover:bg-white/[0.03] transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
       {/* Icon */}
@@ -176,10 +175,9 @@ export default function Skills() {
       <div className="relative z-10 w-full px-6 sm:px-8 lg:px-12 xl:px-16">
         {/* Header */}
         <div className="text-center mb-16">
-          <div 
-            className={`flex items-center justify-center gap-4 mb-8 transition-all duration-1000 ${
-              isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
+          <div
+            className={`flex items-center justify-center gap-4 mb-8 transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
           >
             <div className="w-8 h-px bg-white/20" />
             <span className="text-xs text-white/60 font-light tracking-[0.3em] uppercase">
@@ -188,18 +186,16 @@ export default function Skills() {
             <div className="w-8 h-px bg-white/20" />
           </div>
 
-          <h2 
-            className={`text-4xl sm:text-5xl lg:text-6xl font-light text-white mb-6 transition-all duration-1000 delay-100 ${
-              isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
+          <h2
+            className={`text-4xl sm:text-5xl lg:text-6xl font-light text-white mb-6 transition-all duration-1000 delay-100 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}
           >
             Technical <span className="gradient-text">Expertise</span>
           </h2>
 
-          <p 
-            className={`text-lg text-white/60 max-w-xl mx-auto font-light transition-all duration-1000 delay-200 ${
-              isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
+          <p
+            className={`text-lg text-white/60 max-w-xl mx-auto font-light transition-all duration-1000 delay-200 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}
           >
             A comprehensive toolkit built over years of delivering production-ready ML solutions
           </p>
@@ -208,20 +204,19 @@ export default function Skills() {
         {/* Skills Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-16 max-w-6xl mx-auto">
           {skillCategories.map((category, index) => (
-            <SkillCard 
-              key={category.name} 
-              category={category} 
-              index={index} 
+            <SkillCard
+              key={category.name}
+              category={category}
+              index={index}
               isInView={isInView}
             />
           ))}
         </div>
 
         {/* Tools */}
-        <div 
-          className={`text-center transition-all duration-1000 delay-500 ${
-            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-          }`}
+        <div
+          className={`text-center transition-all duration-1000 delay-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+            }`}
         >
           <p className="text-xs text-white/65 uppercase tracking-wider mb-4">Tools & Platforms</p>
           <div className="flex flex-wrap justify-center gap-2">
